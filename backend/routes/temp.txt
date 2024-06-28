@@ -1,0 +1,103 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Box, TextField, Button, Typography, Paper, CircularProgress } from '@mui/material';
+import { useParams, useNavigate } from 'react-router-dom';
+
+const InstitutionReview = () => {
+  const { institutionId } = useParams();
+  const [institution, setInstitution] = useState(null);
+  const [criteria, setCriteria] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [averageRating, setAverageRating] = useState(0);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchInstitutionAndReviews = async () => {
+      try {
+        const institutionRes = await axios.get(`http://localhost:5000/api/institutions/${institutionId}`);
+        setInstitution(institutionRes.data);
+
+        const reviewsRes = await axios.get(`http://localhost:5000/api/reviews/institution/${institutionId}`);
+        if (reviewsRes.data.length > 0) {
+          const reviews = reviewsRes.data;
+          setCriteria(reviews[0].criteria);
+          setAverageRating((reviews.reduce((acc, review) => acc + review.totalRating, 0) / reviews.length).toFixed(2));
+        } else {
+          setCriteria([
+            { name: 'Critério 1', description: 'Descrição do critério 1', rating: 0 },
+            { name: 'Critério 2', description: 'Descrição do critério 2', rating: 0 },
+            { name: 'Critério 3', description: 'Descrição do critério 3', rating: 0 },
+            // Adicione mais critérios conforme necessário
+          ]);
+        }
+      } catch (err) {
+        console.error('Erro ao buscar instituição e avaliações', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInstitutionAndReviews();
+  }, [institutionId]);
+
+  const handleChange = (index, value) => {
+    const newCriteria = [...criteria];
+    newCriteria[index].rating = value;
+    setCriteria(newCriteria);
+    const newAverageRating = (newCriteria.reduce((acc, criterion) => acc + criterion.rating, 0) / newCriteria.length).toFixed(2);
+    setAverageRating(newAverageRating);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:5000/api/reviews', {
+        institutionId,
+        criteria,
+      });
+      alert('Avaliação enviada com sucesso');
+      console.log('Resposta do servidor:', response.data);
+    } catch (err) {
+      console.error('Erro ao enviar avaliação', err);
+      alert('Erro ao enviar avaliação');
+    }
+  };
+
+  if (loading) {
+    return <CircularProgress />;
+  }
+
+  return (
+    <Box sx={{ mt: 4, px: 2 }}>
+      <Button onClick={() => navigate(-1)} variant="outlined" color="secondary">Voltar</Button>
+      <Typography variant="h4" gutterBottom>Avaliar Instituição</Typography>
+      {institution && (
+        <Paper sx={{ p: 2, mb: 4 }}>
+          <Typography variant="h6">{institution.name}</Typography>
+          <Typography>Localização: {institution.location}</Typography>
+          <Typography>Descrição: {institution.description}</Typography>
+          <Typography>Média Atual: {averageRating}</Typography>
+        </Paper>
+      )}
+      <form onSubmit={handleSubmit}>
+        {criteria.map((criterion, index) => (
+          <Box key={index} sx={{ mb: 2 }}>
+            <Typography>{criterion.name}</Typography>
+            <Typography>{criterion.description}</Typography>
+            <TextField
+              type="number"
+              inputProps={{ min: 0, max: 10 }}
+              value={criterion.rating}
+              onChange={(e) => handleChange(index, parseFloat(e.target.value))}
+              fullWidth
+              required
+            />
+          </Box>
+        ))}
+        <Button type="submit" variant="contained" color="primary">Enviar Avaliação</Button>
+      </form>
+    </Box>
+  );
+};
+
+export default InstitutionReview;
