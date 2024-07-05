@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 // Conectando ao banco de dados
-mongoose.connect('mongodb://localhost:27017/selo-escola-credenciada', {
+mongoose.connect('mongodb://localhost:27017/monitoramento-ue', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

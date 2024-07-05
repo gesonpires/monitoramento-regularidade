@@ -18,14 +18,14 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const {
     name, cnpj, mantenedor, cnpjMantenedor, rua, numero, complemento,
-    bairro, municipio, cep, telefone, email, site, inep, responsavel,
+    bairro, location, cep, telefone, email, site, inep, responsavel,
     cargoResponsavel, telefoneResponsavel, description
   } = req.body;
 
   try {
     const newInstitution = new Institution({
       name, cnpj, mantenedor, cnpjMantenedor, rua, numero, complemento,
-      bairro, municipio, cep, telefone, email, site, inep, responsavel,
+      bairro, location, cep, telefone, email, site, inep, responsavel,
       cargoResponsavel, telefoneResponsavel, description
     });
 
@@ -52,7 +52,7 @@ router.delete('/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
   const {
     name, cnpj, mantenedor, cnpjMantenedor, rua, numero, complemento,
-    bairro, municipio, cep, telefone, email, site, inep, responsavel,
+    bairro, location, cep, telefone, email, site, inep, responsavel,
     cargoResponsavel, telefoneResponsavel, description
   } = req.body;
 
@@ -61,7 +61,7 @@ router.put('/:id', async (req, res) => {
       req.params.id,
       {
         name, cnpj, mantenedor, cnpjMantenedor, rua, numero, complemento,
-        bairro, municipio, cep, telefone, email, site, inep, responsavel,
+        bairro, location, cep, telefone, email, site, inep, responsavel,
         cargoResponsavel, telefoneResponsavel, description
       },
       { new: true }

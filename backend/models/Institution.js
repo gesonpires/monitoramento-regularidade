@@ -9,7 +9,7 @@ const InstitutionSchema = new mongoose.Schema({
   numero: { type: String, required: true },
   complemento: { type: String },
   bairro: { type: String, required: true },
-  municipio: { type: String, required: true },
+  location: { type: String, required: true },
   cep: { type: String, required: true },
   telefone: { type: String, required: true },
   email: { type: String, required: true },
