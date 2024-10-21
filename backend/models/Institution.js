@@ -18,7 +18,12 @@ const InstitutionSchema = new mongoose.Schema({
   responsavel: { type: String, required: true },
   cargoResponsavel: { type: String, required: true },
   telefoneResponsavel: { type: String, required: true },
-  description: { type: String, required: true }
+  description: { type: String, required: true },
+  schoolType: { type: String, required: true },
+  modalidade: { type: [String], required: false },
+  averageRating: { type: Number, default: 0 },
+  totalReviews: {type: Number, default: 0}
+
 });
 
 module.exports = mongoose.model('Institution', InstitutionSchema);

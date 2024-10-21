@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 // Conectando ao banco de dados
-mongoose.connect('mongodb://localhost:27017/monitoramento-ue', {
+mongoose.connect('mongodb://127.0.0.1:27017/monitoramento-ue', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

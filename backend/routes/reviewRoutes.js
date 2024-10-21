@@ -18,17 +18,6 @@ router.get('/institution/:institutionId', async (req, res) => {
   }
 });
 
-// Rota para buscar avaliações de uma instituição específica
-router.get('/:institutionId', async (req, res) => {
-  try {
-    const reviews = await Review.find({ institution: req.params.institutionId }).sort({ createdAt: -1 });
-    res.json(reviews);
-  } catch (err) {
-    console.error('Erro ao buscar avaliações', err);
-    res.status(500).json({ msg: 'Erro ao buscar avaliações' });
-  }
-});
-
 // Rota para criar uma nova avaliação
 router.post('/', async (req, res) => {
   const { userId, institutionId, criteria } = req.body;
@@ -50,6 +39,23 @@ router.post('/', async (req, res) => {
   } catch (err) {
     console.error('Erro ao submeter avaliação', err);
     res.status(500).json({ msg: 'Erro ao submeter avaliação' });
+  }
+});
+
+// Rota para excluir uma avaliação específica de uma instituição
+router.delete('/:reviewId', async (req, res) => {
+  try {
+    const review = await Review.findById(req.params.reviewId);
+    if (!review) {
+      return res.status(404).json({ msg: 'Avaliação não encontrada' });
+    }
+
+    // Excluindo a avaliação
+    await Review.findByIdAndDelete(req.params.reviewId);
+    res.status(200).json({ msg: 'Avaliação excluída com sucesso' });
+  } catch (err) {
+    console.error('Erro ao excluir a avaliação', err);
+    res.status(500).json({ msg: 'Erro no servidor ao excluir a avaliação' });
   }
 });
 

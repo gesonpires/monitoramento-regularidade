@@ -19,14 +19,17 @@ router.post('/', async (req, res) => {
   const {
     name, cnpj, mantenedor, cnpjMantenedor, rua, numero, complemento,
     bairro, location, cep, telefone, email, site, inep, responsavel,
-    cargoResponsavel, telefoneResponsavel, description
+    cargoResponsavel, telefoneResponsavel, description, schoolType, modalidade // Adicionar schoolType aqui
   } = req.body;
+
+  console.log("Modalidade recebida: ", modalidade); // Adiciona esse log para verificar
+
 
   try {
     const newInstitution = new Institution({
       name, cnpj, mantenedor, cnpjMantenedor, rua, numero, complemento,
       bairro, location, cep, telefone, email, site, inep, responsavel,
-      cargoResponsavel, telefoneResponsavel, description
+      cargoResponsavel, telefoneResponsavel, description, schoolType, modalidade // Adicionar schoolType aqui também
     });
 
     await newInstitution.save();
@@ -36,6 +39,7 @@ router.post('/', async (req, res) => {
     res.status(500).json({ msg: 'Erro ao adicionar instituição' });
   }
 });
+
 
 // Rota para deletar uma instituição
 router.delete('/:id', async (req, res) => {
@@ -53,7 +57,7 @@ router.put('/:id', async (req, res) => {
   const {
     name, cnpj, mantenedor, cnpjMantenedor, rua, numero, complemento,
     bairro, location, cep, telefone, email, site, inep, responsavel,
-    cargoResponsavel, telefoneResponsavel, description
+    cargoResponsavel, telefoneResponsavel, description, schoolType, modalidade // Adicionar schoolType aqui
   } = req.body;
 
   try {
@@ -62,7 +66,7 @@ router.put('/:id', async (req, res) => {
       {
         name, cnpj, mantenedor, cnpjMantenedor, rua, numero, complemento,
         bairro, location, cep, telefone, email, site, inep, responsavel,
-        cargoResponsavel, telefoneResponsavel, description
+        cargoResponsavel, telefoneResponsavel, description, schoolType, modalidade // Adicionar schoolType aqui também
       },
       { new: true }
     );
@@ -72,6 +76,7 @@ router.put('/:id', async (req, res) => {
     res.status(500).json({ msg: 'Erro ao atualizar instituição' });
   }
 });
+
 
 // Rota para buscar uma instituição específica
 router.get('/:id', async (req, res) => {
@@ -86,5 +91,33 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ msg: 'Erro ao buscar instituição' });
   }
 });
+
+// Rota para criar uma nova avaliação
+router.post('/reviews', async (req, res) => {
+  const { userId, institutionId, criteria, totalRating, averageRating } = req.body;
+
+  try {
+    // Salva a nova avaliação
+    const newReview = new Review({
+      userId,
+      institutionId,
+      criteria,
+      totalRating
+    });
+    await newReview.save();
+
+    // Atualiza a instituição com a nova média de avaliação
+    const institution = await Institution.findById(institutionId);
+    institution.averageRating = averageRating;
+    await institution.save();
+
+    res.status(201).json(newReview);
+  } catch (error) {
+    console.error('Erro ao salvar avaliação', error);
+    res.status(500).json({ msg: 'Erro ao salvar avaliação' });
+  }
+});
+
+
 
 module.exports = router;
